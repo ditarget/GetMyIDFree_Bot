@@ -5,8 +5,9 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/root/data       # Постоянные пользователи
-      - ./logs:/root/logs       # Логи
+      - ./data:/root/data
+      - ./logs:/root/logs
+      - ./.env:/root/.env
     logging:
       driver: "json-file"
       options:
