@@ -55,25 +55,34 @@ func loadUsers() map[int64]UserRecord {
 
 // Сохраняет пользователей в JSON
 func saveUsers(users map[int64]UserRecord) {
+	// Проверим, куда мы пытаемся сохранить
+	log.Printf("💾 Попытка сохранить users.json в: %s", usersFile)
+
+	// Создаём папку, если её нет
 	err := os.MkdirAll(filepath.Dir(usersFile), 0755)
 	if err != nil {
-		log.Printf("Failed to create data directory: %v", err)
+		log.Printf("❌ Ошибка создания папки: %v", err)
 		return
 	}
 
+	// Создаём файл
 	file, err := os.Create(usersFile)
 	if err != nil {
-		log.Printf("Error creating users.json: %v", err)
+		log.Printf("❌ Ошибка создания файла users.json: %v", err)
 		return
 	}
 	defer file.Close()
 
+	// Записываем JSON
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	err = encoder.Encode(users)
 	if err != nil {
-		log.Printf("Error encoding users.json: %v", err)
+		log.Printf("❌ Ошибка записи JSON: %v", err)
+		return
 	}
+
+	log.Printf("✅ Успешно сохранено %d пользователей в %s", len(users), usersFile)
 }
 
 // Регистрирует нового пользователя, если его ещё нет

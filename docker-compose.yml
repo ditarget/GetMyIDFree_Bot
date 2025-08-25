@@ -1,7 +1,7 @@
 services:
-  tg-id-bot:
+  getmyidfreebot:
     build: .
-    restart: unless-stopped  # 🔥 Главное: автоматически перезапускается
+    restart: unless-stopped
     env_file:
       - .env
     volumes:
@@ -13,5 +13,5 @@ services:
         max-size: "10m"
         max-file: "3"
     # Опционально: ограничить ресурсы
-    mem_limit: 100m
+    mem_limit: 512m
     cpu_shares: 512
