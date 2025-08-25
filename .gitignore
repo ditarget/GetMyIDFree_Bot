@@ -3,16 +3,17 @@
 
 # Logs
 *.log
-*.json
+
 logs/
 *.log.*
 
 # Data
 data/
+*.json
 
 # Binary
 bot
-tg-id-bot
+GetMyID
 
 # Docker
 Dockerfile.local
