@@ -5,8 +5,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/root/app/data
-      - ./logs:/root/app/logs
+      - ./data:/root/data
+      - ./logs:/root/logs
       - ./.env:/root/.env
     logging:
       driver: "json-file"
