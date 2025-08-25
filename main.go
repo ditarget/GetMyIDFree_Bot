@@ -25,9 +25,9 @@ type UserRecord struct {
 
 // Константы
 const (
-	usersFile = "app/data/users.json" // Путь к файлу с пользователями
-	logsDir   = "/app/logs"           // Папка для логов
-	maxAge    = 7 * 24 * time.Hour    // Максимальный возраст логов — 7 дней
+	usersFile = "data/users.json"  // Путь к файлу с пользователями
+	logsDir   = "logs"             // Папка для логов
+	maxAge    = 7 * 24 * time.Hour // Максимальный возраст логов — 7 дней
 )
 
 // Загружает пользователей из JSON
