@@ -1,0 +1,17 @@
+services:
+  tg-id-bot:
+    build: .
+    restart: unless-stopped  # 🔥 Главное: автоматически перезапускается
+    env_file:
+      - .env
+    volumes:
+      - ./data:/root/data       # Постоянные пользователи
+      - ./logs:/root/logs       # Логи
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Опционально: ограничить ресурсы
+    mem_limit: 100m
+    cpu_shares: 512
