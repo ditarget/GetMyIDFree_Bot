@@ -1,7 +1,7 @@
 # Telegram ID Bot / Бот для получения ID в Telegram
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white" alt="Go">
+  <img src="https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white" alt="Go">
   <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/Telegram-B9A3EC?logo=telegram&logoColor=white" alt="Telegram">
   <img src="https://img.shields.io/badge/License-MIT-blue" alt="License">
