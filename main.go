@@ -214,19 +214,20 @@ func main() {
 		userID := update.Message.From.ID
 		chatID := update.Message.Chat.ID
 
-		response := fmt.Sprintf("Your user ID: %d\nCurrent chat ID: %d", userID, chatID)
+		response := fmt.Sprintf("<b>Your user ID:</b> <code>%d</code>\n<b>Current chat ID:</b> <code>%d</code>", userID, chatID)
 
 		// Обработка пересланных сообщений
 		if update.Message.ForwardSenderName != "" {
-			response += fmt.Sprintf("\nForwarded from: [hidden name] %s", update.Message.ForwardSenderName)
+			response += fmt.Sprintf("\n<b>Forwarded from:</b> [hidden name] %s", update.Message.ForwardSenderName)
 		} else if update.Message.ForwardFrom != nil {
-			response += fmt.Sprintf("\nForwarded from: %d", update.Message.ForwardFrom.ID)
+			response += fmt.Sprintf("\n<b>Forwarded from:</b> <code>%d</code>", update.Message.ForwardFrom.ID)
 		} else if update.Message.ForwardFromChat != nil {
-			response += fmt.Sprintf("\nForwarded from chat: %d", update.Message.ForwardFromChat.ID)
+			response += fmt.Sprintf("\n<b>Forwarded from chat:</b> <code>%d</code>", update.Message.ForwardFromChat.ID)
 		}
 
 		// Отправляем ответ
 		msg := tgbotapi.NewMessage(chatID, response)
+		msg.ParseMode = "HTML"
 		_, err := bot.Send(msg)
 		if err != nil {
 			log.Printf("❌ Failed to send message to %d: %v", chatID, err)
