@@ -13,7 +13,6 @@ data/
 *.json
 
 # Binary
-bot
 GetMyID
 
 # Docker
