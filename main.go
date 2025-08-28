@@ -18,7 +18,7 @@ func main() {
 	defer logFile.Close()
 
 	// Загружаем .env
-	err := godotenv.Load(".env.local", "/root/.env")
+	err := godotenv.Load("/root/.env")
 	if err != nil {
 		log.Println("⚠️ .env file not found, using environment variables")
 	}

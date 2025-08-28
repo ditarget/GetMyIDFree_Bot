@@ -7,6 +7,9 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Копируем .env
+COPY .env ./
+
 # 🔹 Копируем ВЕСЬ исходный код
 COPY main.go ./
 COPY bot/ ./bot/
@@ -15,7 +18,6 @@ COPY storage/ ./storage/
 
 # 🛠 Собираем бинарник с именем, отличным от папки, например: app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app main.go
-
 
 # === Stage 2: Минимальный образ для запуска ===
 FROM alpine:latest
