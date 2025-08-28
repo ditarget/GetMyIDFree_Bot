@@ -55,17 +55,14 @@ func loadUsers() map[int64]UserRecord {
 
 // Сохраняет пользователей в JSON
 func saveUsers(users map[int64]UserRecord) {
-	// Проверим, куда мы пытаемся сохранить
 	log.Printf("💾 Попытка сохранить users.json в: %s", usersFile)
 
-	// Создаём папку, если её нет
 	err := os.MkdirAll(filepath.Dir(usersFile), 0755)
 	if err != nil {
 		log.Printf("❌ Ошибка создания папки: %v", err)
 		return
 	}
 
-	// Создаём файл
 	file, err := os.Create(usersFile)
 	if err != nil {
 		log.Printf("❌ Ошибка создания файла users.json: %v", err)
@@ -73,7 +70,6 @@ func saveUsers(users map[int64]UserRecord) {
 	}
 	defer file.Close()
 
-	// Записываем JSON
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	err = encoder.Encode(users)
@@ -141,34 +137,80 @@ func cleanupOldLogs() {
 	}
 }
 
-// Настраивает логирование в файл + stdout
+// setupLogger запускает логгер и фоновую ротацию
 func setupLogger() *os.File {
-	// Создаём папку для логов
+	// Создаём папку
 	if err := os.MkdirAll(logsDir, 0755); err != nil {
 		log.Fatalf("❌ Failed to create logs directory: %v", err)
 	}
 
-	// Открываем файл лога за сегодня
-	logFile, err := os.OpenFile(getLogFileName(time.Now()), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatalf("❌ Failed to open log file: %v", err)
-	}
-
-	// Логируем и в файл, и в консоль
+	// Открываем текущий файл
+	logFile := openLogFile()
 	multiWriter := io.MultiWriter(logFile, os.Stdout)
 	log.SetOutput(multiWriter)
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
+	// Фоновая горутина: ротация логов + очистка старых
+	go func() {
+		ticker := time.NewTicker(10 * time.Minute) // Проверяем каждые 10 минут
+		defer ticker.Stop()
+
+		for range ticker.C {
+			// 1. Проверяем, нужно ли сменить файл лога
+			newFile := reopenLogFileIfNewDay(logFile)
+			if newFile != nil {
+				logFile.Close()
+				multiWriter := io.MultiWriter(newFile, os.Stdout)
+				log.SetOutput(multiWriter)
+				logFile = newFile
+			}
+
+			// 2. Раз в сутки (или при старте нового дня) чистим старые логи
+			now := time.Now()
+			// Если время близко к 00:00–00:10 — чистим (защита от многократного вызова)
+			if now.Hour() == 0 && now.Minute() < 15 {
+				cleanupOldLogs()
+			}
+		}
+	}()
+
 	return logFile
 }
 
+// openLogFile открывает файл по текущей дате
+func openLogFile() *os.File {
+	filename := getLogFileName(time.Now())
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		log.Printf("❌ Failed to open log file %s: %v", filename, err)
+		log.Fatal(err)
+	}
+	return file
+}
+
+// reopenLogFileIfNewDay проверяет, нужно ли сменить файл
+// Возвращает *os.File, если дата изменилась, иначе nil
+func reopenLogFileIfNewDay(currentFile *os.File) *os.File {
+	currentDate := time.Now().Format("2006-01-02")
+	fileInfo, err := currentFile.Stat()
+	if err != nil {
+		log.Printf("⚠️ Cannot stat current log file: %v", err)
+		return nil
+	}
+	fileDate := fileInfo.ModTime().Format("2006-01-02")
+
+	if currentDate != fileDate {
+		log.Println("🔄 Date changed, rotating log file...")
+		newFile := openLogFile()
+		return newFile
+	}
+	return nil
+}
+
 func main() {
-	// Настройка логгера
+	// Настройка логгера (с ротацией)
 	logFile := setupLogger()
 	defer logFile.Close()
-
-	// Удаляем старые логи (старше 7 дней)
-	cleanupOldLogs()
 
 	// Загружаем .env
 	err := godotenv.Load("/root/.env")
