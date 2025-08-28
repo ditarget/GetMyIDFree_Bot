@@ -41,7 +41,7 @@ func Start(token string, users map[int64]storage.UserRecord) {
 		response := fmt.Sprintf("<b>Your user ID:</b> <code>%d</code>\n<b>Current chat ID:</b> <code>%d</code>", userID, chatID)
 
 		if update.Message.ForwardSenderName != "" {
-			response += fmt.Sprintf("\n<b>Forwarded from:</b> [hidden name] %s", update.Message.ForwardSenderName)
+			response += fmt.Sprintf("\n<b>Forwarded from:</b> [Hidden ID] %s", update.Message.ForwardSenderName)
 		} else if update.Message.ForwardFrom != nil {
 			response += fmt.Sprintf("\n<b>Forwarded from:</b> <code>%d</code>", update.Message.ForwardFrom.ID)
 		} else if update.Message.ForwardFromChat != nil {
